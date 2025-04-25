@@ -1,19 +1,8 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import WeatherDashboard from './weather'
+import React from 'react';
+import Weather from './features/weather/Weather';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  return <Weather />;
+};
 
-  return (
-    <>
-      <div>
-        <WeatherDashboard />
-      </div>      
-    </>
-  )
-}
-
-export default App
+export default App;
