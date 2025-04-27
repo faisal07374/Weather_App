@@ -1,23 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { getWeather } from './weatherAPI'; 
 
-const apiKey = 'b07a99624423461ea2d183241252504';
+
 
 export const fetchWeather = createAsyncThunk(
   'weather/fetchWeather',
   async (city, { rejectWithValue }) => {
     try {
-      const res = await fetch(
-        `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(city)}`
-      );
-      const data = await res.json();
-
-      if (data.error) {
-        return rejectWithValue(data.error.message);
-      }
-
+      const data = await getWeather(city); 
       return data;
-    } catch (err) {
-      return rejectWithValue(err.message || 'An error occurred');
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -29,13 +22,18 @@ const weatherSlice = createSlice({
     status: 'idle',
     error: null,
   },
-  reducers: {},
+  reducers: {
+    clearWeather: (state) => {
+      state.data = null;
+      state.status = 'idle';
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchWeather.pending, (state) => {
         state.status = 'loading';
         state.error = null;
-        state.data = null;
       })
       .addCase(fetchWeather.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -43,9 +41,10 @@ const weatherSlice = createSlice({
       })
       .addCase(fetchWeather.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload || action.error.message;
+        state.error = action.payload || 'Unable to fetch weather';
       });
   },
 });
 
+export const { clearWeather } = weatherSlice.actions;
 export default weatherSlice.reducer;
